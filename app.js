@@ -22,6 +22,7 @@ bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
 
 
 function getData() {
+
     wunderground.conditions().request('97214', function(err, response){
         var wuJSON = {};
 
@@ -33,6 +34,7 @@ function getData() {
 
         wuJSON['current_temperature'] = response.current_observation.temp_c;
         wuJSON['current_humidity'] = parseInt(response.current_observation.relative_humidity);
+        wuJSON['pressure_mb'] = response.current_observation.pressure_mb;
 
         Influx.writeInflux(wuJSON);
         setTimeout(getData, 300000);
