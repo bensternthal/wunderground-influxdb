@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  nest:
+    build: .
+    command: node app.js
+    volumes:
+    - ./:/node_app
+    - /node_app/node_modules
+    restart: always

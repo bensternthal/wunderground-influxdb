@@ -1,0 +1,17 @@
+{
+  "name": "wunderground-influxdb",
+  "version": "1.0.0",
+  "description": "Wunderground To InfluxDB",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Benjamin Sternthal",
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "influx": "^4.2.1",
+    "nconf": "^0.8.4",
+    "slackbots": "^0.5.2",
+    "wundergroundnode": "^0.9.0"
+  }
+}
