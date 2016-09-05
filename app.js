@@ -21,7 +21,6 @@ var wunderground = new Wunderground(conf.get('wunderground_key'));
 bot.postMessageToGroup(channel, 'Weather Underground Has Started', params, getData());
 
 function getData() {
-
     wunderground.conditions().request('97214', function(err, response){
         var wuJSON = {};
 
@@ -40,15 +39,19 @@ function getData() {
             wuJSON['current_humidity'] = parseInt(response.current_observation.relative_humidity);
             wuJSON['pressure_mb'] = response.current_observation.pressure_mb;
 
-            Influx.writeInflux(wuJSON).then(function() {
-                setTimeout(getData, conf.get('update_frequency'));
-            }).catch(function(e) {
-                bot.postMessageToGroup(channel,  e.message);
-                // Retry
-                setTimeout(getData, conf.get('update_frequency'));
-            });
-
+            //We Have Vaid JSON Write Data
+            writeData(wuJSON);
         }
+    });
+};
 
+
+function writeData(wuJSON) {
+    Influx.writeInflux(wuJSON).then(function() {
+        setTimeout(getData, conf.get('update_frequency'));
+    }).catch(function(e) {
+        bot.postMessageToGroup(channel,  e.message);
+        // Retry
+        setTimeout(getData, conf.get('update_frequency'));
     });
 };
