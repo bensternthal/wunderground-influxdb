@@ -18,7 +18,7 @@ var params = {icon_emoji: ':wu:'};
 // Create & configure wunderground
 var wunderground = new Wunderground(conf.get('wunderground_key'));
 
-bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
+bot.postMessageToGroup(channel, 'Weather Underground Has Started', params, getData());
 
 function getData() {
 
@@ -28,25 +28,27 @@ function getData() {
         if(err) {
             bot.postMessageToGroup(channel, 'Error!' + err, params, function() {
                 console.log(err);
-                process.exit(1);
             });
         }
 
         if(response.response.error) {
             bot.postMessageToGroup(channel, 'Error!' + response.response.error.type, params, function() {
                 console.log('Error: '+ response.response.error.type);
-                process.exit(1);
             });
         } else {
             wuJSON['current_temperature'] = response.current_observation.temp_c;
             wuJSON['current_humidity'] = parseInt(response.current_observation.relative_humidity);
             wuJSON['pressure_mb'] = response.current_observation.pressure_mb;
 
-            Influx.writeInflux(wuJSON);
-            setTimeout(getData, conf.get('update_frequency'));
+            Influx.writeInflux(wuJSON).then(function() {
+                setTimeout(getData, conf.get('update_frequency'));
+            }).catch(function(e) {
+                bot.postMessageToGroup(channel,  e.message);
+                // Retry
+                setTimeout(getData, conf.get('update_frequency'));
+            });
+
         }
 
     });
 };
-
-getData();
