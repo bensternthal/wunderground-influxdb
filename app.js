@@ -1,10 +1,9 @@
 'use strict';
 
 var conf = require('./lib/conf');
-var Wunderground = require('wundergroundnode');
 var Influx = require('./lib/influx');
 var SlackBot = require('slackbots');
-
+var WU = require('./lib/WU');
 
 // Create & Configure Slackbot
 var bot = new SlackBot({
@@ -14,44 +13,18 @@ var bot = new SlackBot({
 var channel = conf.get('slackbot:channel');
 var params = {icon_emoji: ':wu:'};
 
-
-// Create & configure wunderground
-var wunderground = new Wunderground(conf.get('wunderground_key'));
-
-bot.postMessageToGroup(channel, 'Weather Underground Has Started', params, getData());
+bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
 
 function getData() {
-    wunderground.conditions().request('97214', function(err, response){
-        var wuJSON = {};
 
-        if(err) {
-            bot.postMessageToGroup(channel, 'Error!' + err, params, function() {
-                console.log(err);
-            });
-        }
-
-        if(response.response.error) {
-            bot.postMessageToGroup(channel, 'Error!' + response.response.error.type, params, function() {
-                console.log('Error: '+ response.response.error.type);
-            });
-        } else {
-            wuJSON['current_temperature'] = response.current_observation.temp_c;
-            wuJSON['current_humidity'] = parseInt(response.current_observation.relative_humidity);
-            wuJSON['pressure_mb'] = response.current_observation.pressure_mb;
-
-            //We Have Vaid JSON Write Data
-            writeData(wuJSON);
-        }
-    });
-};
-
-
-function writeData(wuJSON) {
-    Influx.writeInflux(wuJSON).then(function() {
+    WU.getWUData().then(Influx.writeInflux).then(function() {
         setTimeout(getData, conf.get('update_frequency'));
     }).catch(function(e) {
-        bot.postMessageToGroup(channel,  e.message);
-        // Retry
+        bot.postMessageToGroup(channel,  'Error: ' + e.message);
+        // Retry on error
         setTimeout(getData, conf.get('update_frequency'));
     });
+
 };
+
+getData();
