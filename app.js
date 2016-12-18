@@ -13,10 +13,10 @@ var bot = new SlackBot({
 var channel = conf.get('slackbot:channel');
 var params = {icon_emoji: ':wu:'};
 
+// Alert We have Started
 bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
 
 function getData() {
-
     WU.getWUData().then(Influx.writeInflux).then(function() {
         setTimeout(getData, conf.get('update_frequency'));
     }).catch(function(e) {
@@ -24,7 +24,10 @@ function getData() {
         // Retry on error
         setTimeout(getData, conf.get('update_frequency'));
     });
-
 };
 
-getData();
+
+//Delay 10 Seconds In Case of Flapping
+setTimeout(function() {
+    getData();
+}, 10000);
