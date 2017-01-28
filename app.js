@@ -14,7 +14,7 @@ var channel = conf.get('slackbot:channel');
 var params = {icon_emoji: ':wu:'};
 
 // Alert We have Started
-//bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
+bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
 
 function getData() {
     WU.getWUData().then(Influx.writeInflux).then(function() {
