@@ -1,20 +1,20 @@
 {
   "name": "wunderground-influxdb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wunderground To InfluxDB",
   "main": "app.js",
-  "scripts": {
-    "start": "node app.js"
+  "engines": {
+    "node": ">= 6.0.X",
+    "npm": ">= 1.2.x"
   },
   "author": "Benjamin Sternthal",
   "license": "MPL-2.0",
   "devDependencies": {
-    "chai": "^3.5.0",
+    "dotenv": "^4.0.0",
     "influx": "^4.2.1",
-    "mocha": "^3.2.0",
-    "nconf": "^0.8.4",
-    "sinon": "^1.17.7",
     "slackbots": "^0.5.2",
-    "wundergroundnode": "^0.9.0"
+    "wundergroundnode": "^0.9.0",
+    "eslint": "^3.19.0",
+    "eslint-config-google": "^0.7.1"
   }
 }

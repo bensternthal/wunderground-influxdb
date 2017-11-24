@@ -1,33 +1,38 @@
-'use strict';
-
-var conf = require('./lib/conf');
-var Influx = require('./lib/influx');
-var SlackBot = require('slackbots');
-var WU = require('./lib/WU');
+require('dotenv').config();
+const Influx = require('./lib/influx');
+const SlackBot = require('slackbots');
+const WU = require('./lib/WU');
 
 // Create & Configure Slackbot
-var bot = new SlackBot({
-    token: conf.get('slackbot:api_token'),
-    name: 'wu-status'
+let bot = new SlackBot({
+    token: process.env.SLACK_API_TOKEN,
+    name: process.env.SLACK_BOT_NAME,
 });
-var channel = conf.get('slackbot:channel');
-var params = {icon_emoji: ':wu:'};
+let channel = process.env.SLACK_CHANNEL;
+let params = {icon_emoji: ':wu:'};
+let updateFrequency = process.env.UPDATE_FREQUENCY;
 
-// Alert We have Started
+// Alert To Slax=ck We have Started
 bot.postMessageToGroup(channel, 'Weather Underground Has Started', params);
+
+// Catch errors
+bot.on('error', (data) => {
+    console.log(data);
+});
+
 
 function getData() {
     WU.getWUData().then(Influx.writeInflux).then(function() {
-        setTimeout(getData, conf.get('update_frequency'));
+        setTimeout(getData, updateFrequency);
     }).catch(function(e) {
-        bot.postMessageToGroup(channel,  'Error: ' + e.message);
+        bot.postMessageToGroup(channel, 'Error: ' + e.message);
+        console.log('Error: ' + e.message);
         // Retry on error, but timeout for 5 minutes
         setTimeout(getData, 300000);
     });
 };
 
-
-//Start after 10 seconds
+// Start after 10 seconds
 setTimeout(function() {
     getData();
 }, 10000);

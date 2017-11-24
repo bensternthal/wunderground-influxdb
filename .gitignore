@@ -1,11 +1,11 @@
 lib-cov
 *.seed
 *.log
-*.csv
 *.dat
 *.out
 *.pid
 *.gz
+.env
 
 pids
 logs
@@ -14,10 +14,8 @@ results
 npm-debug.log
 node_modules
 
-local.json
-prod.json
-
 db/
 test/db/
+logs/
 
 .DS_Store

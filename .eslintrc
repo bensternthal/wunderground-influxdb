@@ -1,0 +1,21 @@
+{
+  "extends": "google",
+  "env": {
+      "browser": false,
+      "es6": true,
+      "node": true
+  },
+  "rules": {
+    "max-len": [1, 120, 2, {ignoreComments: true}],
+    "no-unused-vars": [1, {"vars": "local", "args": "none"}],
+    "no-multiple-empty-lines": 0,
+    "require-jsdoc": ["warn", {
+        "require": {
+            "FunctionDeclaration": false,
+            "MethodDefinition": false,
+            "ClassDeclaration": false,
+            "ArrowFunctionExpression": false
+        }
+    }],     
+  }  
+}
